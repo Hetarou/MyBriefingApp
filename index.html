@@ -505,15 +505,15 @@
 
     <nav class="tabs" role="tablist" aria-label="表示切り替え">
       <span class="tabs__indicator" id="tabsIndicator"></span>
-      <button class="tabs__btn is-active" data-tab="today" role="tab" aria-selected="true">今日</button>
-      <button class="tabs__btn" data-tab="news" role="tab" aria-selected="false">ニュース</button>
-      <button class="tabs__btn" data-tab="study" role="tab" aria-selected="false">勉強</button>
+      <button class="tabs__btn is-active" id="tab-today" data-tab="today" role="tab" aria-selected="true" aria-controls="panel-today">今日</button>
+      <button class="tabs__btn" id="tab-news" data-tab="news" role="tab" aria-selected="false" aria-controls="panel-news">ニュース</button>
+      <button class="tabs__btn" id="tab-study" data-tab="study" role="tab" aria-selected="false" aria-controls="panel-study">勉強</button>
     </nav>
 
     <main class="panels">
 
       <!-- 今日 -->
-      <section class="panel is-active" data-panel="today">
+      <section class="panel is-active" id="panel-today" data-panel="today" role="tabpanel" aria-labelledby="tab-today">
         <div class="section">
           <div class="section__head">
             <span class="section__title">
@@ -560,21 +560,21 @@
       </section>
 
       <!-- ニュース -->
-      <section class="panel" data-panel="news">
-        <div class="subtabs">
+      <section class="panel" id="panel-news" data-panel="news" role="tabpanel" aria-labelledby="tab-news">
+        <div class="subtabs" role="tablist" aria-label="ニュースの種類">
           <span class="subtabs__indicator" id="subtabsIndicator"></span>
-          <button class="subtabs__btn is-active" data-feed="personal">あなた向け</button>
-          <button class="subtabs__btn" data-feed="general">一般</button>
+          <button class="subtabs__btn is-active" id="subtab-personal" data-feed="personal" role="tab" aria-selected="true" aria-controls="feed-personal">あなた向け</button>
+          <button class="subtabs__btn" id="subtab-general" data-feed="general" role="tab" aria-selected="false" aria-controls="feed-general">一般</button>
         </div>
-        <div class="news-feed is-active" id="feed-personal">
+        <div class="news-feed is-active" id="feed-personal" role="tabpanel" aria-labelledby="subtab-personal">
           <div class="card skeleton" style="height:172px"></div>
           <div class="card skeleton" style="height:172px"></div>
         </div>
-        <div class="news-feed" id="feed-general"></div>
+        <div class="news-feed" id="feed-general" role="tabpanel" aria-labelledby="subtab-general"></div>
       </section>
 
       <!-- 勉強 -->
-      <section class="panel" data-panel="study">
+      <section class="panel" id="panel-study" data-panel="study" role="tabpanel" aria-labelledby="tab-study">
         <div class="section">
           <div class="section__head">
             <span class="section__title">
@@ -678,6 +678,7 @@
     subtabBtns.forEach(function(b){
       var active = b.dataset.feed === name;
       b.classList.toggle("is-active", active);
+      b.setAttribute("aria-selected", active ? "true" : "false");
       if(active) moveIndicator(subtabsIndicator, b, subtabsNav);
     });
     Object.keys(feeds).forEach(function(k){
