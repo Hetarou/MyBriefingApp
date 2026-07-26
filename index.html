@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Briefing</title>
+<style>
+  :root{
+    --bg-0:#080a12;
+    --bg-1:#0d1120;
+    --bg-2:#121734;
+    --surface:rgba(255,255,255,.055);
+    --surface-hi:rgba(255,255,255,.095);
+    --border:rgba(255,255,255,.09);
+    --border-hi:rgba(255,255,255,.16);
+    --text-0:#f4f5fb;
+    --text-1:rgba(244,245,251,.72);
+    --text-2:rgba(244,245,251,.46);
+    --accent-a:#8b7bff;
+    --accent-b:#31e3d6;
+    --accent-grad:linear-gradient(135deg,var(--accent-a),var(--accent-b));
+    --danger:#ff6b81;
+    --warn:#ffb84d;
+    --ok:#4ee3a0;
+    --radius-lg:24px;
+    --radius-md:16px;
+    --radius-sm:12px;
+    --pill:999px;
+    --shadow-card:0 14px 34px -16px rgba(0,0,0,.6);
+    --shadow-pop:0 20px 46px -18px rgba(80,60,220,.45);
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","YuGothic",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--text-0);
+    background:
+      radial-gradient(1100px 640px at 12% -8%, rgba(139,123,255,.30), transparent 60%),
+      radial-gradient(900px 620px at 105% 8%, rgba(49,227,214,.20), transparent 55%),
+      linear-gradient(180deg,var(--bg-1),var(--bg-0) 55%,var(--bg-0));
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+    min-height:100%;
+    padding-bottom:48px;
+  }
+
+  ::selection{ background:rgba(139,123,255,.35); }
+
+  a{ color:inherit; }
+
+  button{ font:inherit; color:inherit; }
+
+  .app{
+    max-width:480px;
+    margin:0 auto;
+    padding:22px 18px 8px;
+  }
+
+  /* ---------- Header ---------- */
+  .hero{
+    position:relative;
+    padding:26px 22px 24px;
+    border-radius:var(--radius-lg);
+    background:linear-gradient(150deg, rgba(139,123,255,.22), rgba(49,227,214,.10) 55%, rgba(255,255,255,.03));
+    border:1px solid var(--border-hi);
+    overflow:hidden;
+    box-shadow:var(--shadow-card);
+  }
+  .hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(220px 160px at 88% -10%, rgba(255,255,255,.16), transparent 70%);
+    pointer-events:none;
+  }
+  .hero__badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:.02em;
+    color:var(--text-1);
+    background:rgba(255,255,255,.08);
+    border:1px solid var(--border-hi);
+    padding:6px 12px;
+    border-radius:var(--pill);
+  }
+  .hero__badge .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--accent-grad);
+    box-shadow:0 0 10px rgba(139,123,255,.9);
+  }
+  .hero__date{
+    display:flex;
+    align-items:flex-end;
+    gap:14px;
+    margin-top:18px;
+  }
+  .hero__day{
+    font-size:56px;
+    font-weight:800;
+    line-height:.9;
+    letter-spacing:-.02em;
+    background:var(--accent-grad);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .hero__meta{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    padding-bottom:4px;
+  }
+  .hero__month{ font-size:14px; color:var(--text-1); font-weight:600; }
+  .hero__weekday{ font-size:19px; font-weight:700; }
+  .hero__sub{
+    margin-top:14px;
+    font-size:13.5px;
+    color:var(--text-1);
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    position:relative;
+    display:flex;
+    margin-top:18px;
+    padding:5px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--pill);
+    backdrop-filter:blur(18px);
+  }
+  .tabs__indicator{
+    position:absolute;
+    top:5px; left:5px;
+    height:calc(100% - 10px);
+    width:calc(33.333% - 3.33px);
+    border-radius:var(--pill);
+    background:var(--accent-grad);
+    box-shadow:0 8px 20px -6px rgba(139,123,255,.65);
+    transition:transform .38s var(--ease);
+    z-index:0;
+  }
+  .tabs__btn{
+    position:relative;
+    z-index:1;
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:10px 0;
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--text-1);
+    border-radius:var(--pill);
+    cursor:pointer;
+    transition:color .25s var(--ease);
+  }
+  .tabs__btn.is-active{ color:#0b0c18; }
+
+  /* ---------- Panels ---------- */
+  .panels{ margin-top:20px; }
+  .panel{ display:none; }
+  .panel.is-active{
+    display:block;
+    animation:rise .42s var(--ease);
+  }
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .section{ margin-bottom:26px; }
+  .section:last-child{ margin-bottom:4px; }
+  .section__head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:12px;
+    padding:0 2px;
+  }
+  .section__title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:15px;
+    font-weight:800;
+    letter-spacing:.01em;
+  }
+  .section__title svg{ width:17px; height:17px; opacity:.85; }
+  .section__count{
+    font-size:12px;
+    color:var(--text-2);
+    font-weight:600;
+  }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    backdrop-filter:blur(18px);
+    transition:transform .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease);
+  }
+  .card + .card{ margin-top:10px; }
+  .card:active{ transform:scale(.985); }
+
+  /* schedule */
+  .sched{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:14px 16px;
+  }
+  .sched__time{
+    font-size:14.5px;
+    font-weight:800;
+    color:var(--text-0);
+    min-width:52px;
+    padding:6px 0;
+    text-align:center;
+    border-radius:var(--radius-sm);
+    background:rgba(139,123,255,.14);
+    border:1px solid rgba(139,123,255,.28);
+  }
+  .sched__body{ flex:1; min-width:0; }
+  .sched__title{ font-size:14.5px; font-weight:700; }
+  .sched__loc{ font-size:12.5px; color:var(--text-2); margin-top:2px; }
+
+  /* tasks */
+  .task{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 16px;
+  }
+  .task__check{
+    width:21px; height:21px;
+    border-radius:7px;
+    border:1.5px solid var(--border-hi);
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:background .2s var(--ease), border-color .2s var(--ease);
+  }
+  .task__check svg{
+    width:13px; height:13px;
+    opacity:0;
+    transform:scale(.5);
+    transition:opacity .18s var(--ease), transform .18s var(--ease);
+  }
+  .task.is-done .task__check{ background:var(--accent-grad); border-color:transparent; }
+  .task.is-done .task__check svg{ opacity:1; transform:scale(1); }
+  .task.is-done .task__title{ color:var(--text-2); text-decoration:line-through; }
+  .task__body{ flex:1; min-width:0; }
+  .task__title{ font-size:14.5px; font-weight:700; transition:color .2s var(--ease); }
+  .task__due{ font-size:12px; color:var(--text-2); margin-top:2px; }
+  .task__flag{
+    width:7px; height:7px; border-radius:50%;
+    flex-shrink:0;
+  }
+  .flag-high{ background:var(--danger); box-shadow:0 0 8px rgba(255,107,129,.7); }
+  .flag-medium{ background:var(--warn); box-shadow:0 0 8px rgba(255,184,77,.6); }
+  .flag-low{ background:var(--ok); box-shadow:0 0 8px rgba(78,227,160,.6); }
+
+  /* today news mini */
+  .mini-news{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:13px 16px;
+    text-decoration:none;
+  }
+  .mini-news__idx{
+    font-size:12px; font-weight:800;
+    color:var(--text-2);
+    padding-top:1px;
+  }
+  .mini-news__headline{ font-size:14px; font-weight:700; line-height:1.45; }
+  .mini-news__source{ font-size:12px; color:var(--text-2); margin-top:4px; }
+
+  /* ---------- News tab ---------- */
+  .subtabs{
+    position:relative;
+    display:flex;
+    padding:4px;
+    margin-bottom:16px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--pill);
+    width:fit-content;
+  }
+  .subtabs__indicator{
+    position:absolute;
+    top:4px; left:4px;
+    height:calc(100% - 8px);
+    width:calc(50% - 4px);
+    border-radius:var(--pill);
+    background:rgba(255,255,255,.14);
+    border:1px solid var(--border-hi);
+    transition:transform .32s var(--ease);
+    z-index:0;
+  }
+  .subtabs__btn{
+    position:relative; z-index:1;
+    border:none; background:transparent;
+    padding:8px 18px;
+    font-size:13.5px; font-weight:700;
+    color:var(--text-2);
+    border-radius:var(--pill);
+    cursor:pointer;
+    transition:color .25s var(--ease);
+    white-space:nowrap;
+  }
+  .subtabs__btn.is-active{ color:var(--text-0); }
+
+  .news-feed{ display:none; }
+  .news-feed.is-active{ display:block; animation:rise .4s var(--ease); }
+
+  .news-card{
+    padding:17px 17px 15px;
+  }
+  .news-card__top{
+    display:flex; align-items:center; gap:8px;
+    margin-bottom:9px;
+  }
+  .news-card__source{
+    font-size:11.5px; font-weight:800;
+    color:var(--accent-b);
+    letter-spacing:.02em;
+  }
+  .news-card__dot{ width:3px; height:3px; border-radius:50%; background:var(--text-2); }
+  .news-card__time{ font-size:11.5px; color:var(--text-2); }
+  .news-card__headline{
+    font-size:15.5px; font-weight:800; line-height:1.45;
+    margin-bottom:8px;
+  }
+  .news-card__summary{
+    font-size:13px; line-height:1.65; color:var(--text-1);
+    margin-bottom:13px;
+  }
+  .news-card__link{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:12.5px; font-weight:700;
+    color:var(--text-0);
+    text-decoration:none;
+    padding:7px 13px 7px 14px;
+    border-radius:var(--pill);
+    background:rgba(255,255,255,.07);
+    border:1px solid var(--border-hi);
+    transition:background .2s var(--ease), transform .2s var(--ease);
+  }
+  .news-card__link:hover{ background:rgba(255,255,255,.13); }
+  .news-card__link:active{ transform:scale(.96); }
+  .news-card__link svg{ width:11px; height:11px; }
+
+  /* ---------- Study tab ---------- */
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .chip{
+    padding:9px 15px;
+    font-size:13px; font-weight:700;
+    border-radius:var(--pill);
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--text-1);
+    cursor:pointer;
+    transition:all .2s var(--ease);
+  }
+  .chip.is-selected{
+    background:var(--accent-grad);
+    color:#0b0c18;
+    border-color:transparent;
+    box-shadow:0 8px 18px -8px rgba(139,123,255,.7);
+  }
+
+  .generate-btn{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:var(--radius-md);
+    background:var(--accent-grad);
+    color:#0b0c18;
+    font-size:15px;
+    font-weight:800;
+    letter-spacing:.01em;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    box-shadow:var(--shadow-pop);
+    transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+    margin-bottom:22px;
+  }
+  .generate-btn:active{ transform:scale(.98); }
+  .generate-btn svg{ width:17px; height:17px; transition:transform .5s var(--ease); }
+  .generate-btn.is-loading svg{ animation:spin 1s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .qcard{
+    padding:0;
+    overflow:hidden;
+  }
+  .qcard__head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px 17px;
+    cursor:pointer;
+  }
+  .qcard__topic{
+    font-size:10.5px; font-weight:800;
+    color:var(--accent-b);
+    background:rgba(49,227,214,.12);
+    border:1px solid rgba(49,227,214,.28);
+    padding:3px 9px;
+    border-radius:var(--pill);
+    flex-shrink:0;
+  }
+  .qcard__q{ flex:1; font-size:14px; font-weight:700; line-height:1.5; }
+  .qcard__chev{
+    flex-shrink:0;
+    width:20px; height:20px;
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .32s var(--ease);
+  }
+  .qcard.is-open .qcard__chev{ transform:rotate(180deg); }
+  .qcard__a-wrap{
+    display:grid;
+    grid-template-rows:0fr;
+    transition:grid-template-rows .34s var(--ease);
+  }
+  .qcard.is-open .qcard__a-wrap{ grid-template-rows:1fr; }
+  .qcard__a-inner{ overflow:hidden; }
+  .qcard__a{
+    margin:0 17px 16px;
+    padding:12px 14px;
+    font-size:13px; line-height:1.6;
+    color:var(--text-1);
+    background:rgba(139,123,255,.10);
+    border:1px solid rgba(139,123,255,.24);
+    border-radius:var(--radius-sm);
+  }
+
+  .empty{
+    padding:30px 18px;
+    text-align:center;
+    color:var(--text-2);
+    font-size:13px;
+  }
+
+  @media (min-width:520px){
+    .app{ padding-top:36px; }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <span class="hero__badge"><span class="dot"></span><span id="greeting">おはようございます</span></span>
+      <div class="hero__date">
+        <span class="hero__day" id="dateDay">--</span>
+        <div class="hero__meta">
+          <span class="hero__month" id="dateMonth">-月</span>
+          <span class="hero__weekday" id="dateWeekday">-曜日</span>
+        </div>
+      </div>
+      <p class="hero__sub" id="heroSub">今日のブリーフィングを準備しています…</p>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="表示切り替え">
+      <span class="tabs__indicator" id="tabsIndicator"></span>
+      <button class="tabs__btn is-active" data-tab="today" role="tab" aria-selected="true">今日</button>
+      <button class="tabs__btn" data-tab="news" role="tab" aria-selected="false">ニュース</button>
+      <button class="tabs__btn" data-tab="study" role="tab" aria-selected="false">勉強</button>
+    </nav>
+
+    <main class="panels">
+
+      <!-- 今日 -->
+      <section class="panel is-active" data-panel="today">
+        <div class="section">
+          <div class="section__head">
+            <span class="section__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              予定
+            </span>
+            <span class="section__count" id="scheduleCount"></span>
+          </div>
+          <div id="scheduleList"></div>
+        </div>
+
+        <div class="section">
+          <div class="section__head">
+            <span class="section__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              タスク
+            </span>
+            <span class="section__count" id="taskCount"></span>
+          </div>
+          <div id="taskList"></div>
+        </div>
+
+        <div class="section">
+          <div class="section__head">
+            <span class="section__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16"/><path d="M6 22V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v18"/><path d="M9 8h6M9 12h6"/></svg>
+              気になるニュース
+            </span>
+          </div>
+          <div id="topNewsList"></div>
+        </div>
+      </section>
+
+      <!-- ニュース -->
+      <section class="panel" data-panel="news">
+        <div class="subtabs">
+          <span class="subtabs__indicator" id="subtabsIndicator"></span>
+          <button class="subtabs__btn is-active" data-feed="personal">あなた向け</button>
+          <button class="subtabs__btn" data-feed="general">一般</button>
+        </div>
+        <div class="news-feed is-active" id="feed-personal"></div>
+        <div class="news-feed" id="feed-general"></div>
+      </section>
+
+      <!-- 勉強 -->
+      <section class="panel" data-panel="study">
+        <div class="section">
+          <div class="section__head">
+            <span class="section__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              トピックを選ぶ
+            </span>
+          </div>
+          <div class="chips" id="topicChips"></div>
+        </div>
+
+        <button class="generate-btn" id="generateBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
+          <span id="generateBtnLabel">問題を作る</span>
+        </button>
+
+        <div class="section">
+          <div class="section__head">
+            <span class="section__title">問題</span>
+            <span class="section__count" id="questionCount"></span>
+          </div>
+          <div id="questionList"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Header: date / greeting ---------------- */
+  var WEEKDAYS = ["日曜日","月曜日","火曜日","水曜日","木曜日","金曜日","土曜日"];
+  function renderHeader(){
+    var now = new Date();
+    var h = now.getHours();
+    var greeting = h < 5 ? "こんばんは" : h < 11 ? "おはようございます" : h < 17 ? "こんにちは" : "こんばんは";
+    document.getElementById("greeting").textContent = greeting;
+    document.getElementById("dateDay").textContent = now.getDate();
+    document.getElementById("dateMonth").textContent = (now.getMonth() + 1) + "月";
+    document.getElementById("dateWeekday").textContent = WEEKDAYS[now.getDay()];
+  }
+  renderHeader();
+
+  /* ---------------- Tabs ---------------- */
+  var tabsNav = document.querySelector(".tabs");
+  var tabBtns = Array.prototype.slice.call(document.querySelectorAll(".tabs__btn"));
+  var tabsIndicator = document.getElementById("tabsIndicator");
+  var panels = Array.prototype.slice.call(document.querySelectorAll(".panel"));
+
+  function moveIndicator(indicator, btn, container){
+    if(!btn) return;
+    var cRect = container.getBoundingClientRect();
+    var bRect = btn.getBoundingClientRect();
+    var x = bRect.left - cRect.left - parseFloat(getComputedStyle(container).paddingLeft || 0);
+    indicator.style.width = bRect.width + "px";
+    indicator.style.transform = "translateX(" + x + "px)";
+  }
+
+  function activateTab(name){
+    tabBtns.forEach(function(b){
+      var active = b.dataset.tab === name;
+      b.classList.toggle("is-active", active);
+      b.setAttribute("aria-selected", active ? "true" : "false");
+      if(active) moveIndicator(tabsIndicator, b, tabsNav);
+    });
+    panels.forEach(function(p){
+      p.classList.toggle("is-active", p.dataset.panel === name);
+    });
+  }
+
+  tabBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){ activateTab(btn.dataset.tab); });
+  });
+
+  window.addEventListener("resize", function(){
+    var active = tabBtns.find ? tabBtns.find(function(b){ return b.classList.contains("is-active"); })
+                              : tabBtns.filter(function(b){ return b.classList.contains("is-active"); })[0];
+    moveIndicator(tabsIndicator, active, tabsNav);
+    var activeFeedBtn = subtabBtns.filter(function(b){ return b.classList.contains("is-active"); })[0];
+    moveIndicator(subtabsIndicator, activeFeedBtn, subtabsNav);
+  });
+
+  /* ---------------- News subtabs ---------------- */
+  var subtabsNav = document.querySelector(".subtabs");
+  var subtabBtns = Array.prototype.slice.call(document.querySelectorAll(".subtabs__btn"));
+  var subtabsIndicator = document.getElementById("subtabsIndicator");
+  var feeds = {
+    personal: document.getElementById("feed-personal"),
+    general: document.getElementById("feed-general")
+  };
+
+  function activateFeed(name){
+    subtabBtns.forEach(function(b){
+      var active = b.dataset.feed === name;
+      b.classList.toggle("is-active", active);
+      if(active) moveIndicator(subtabsIndicator, b, subtabsNav);
+    });
+    Object.keys(feeds).forEach(function(k){
+      feeds[k].classList.toggle("is-active", k === name);
+    });
+  }
+
+  subtabBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){ activateFeed(btn.dataset.feed); });
+  });
+
+  /* ---------------- Helpers ---------------- */
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(c){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;" }[c];
+    });
+  }
+
+  function relativeTime(iso){
+    var then = new Date(iso).getTime();
+    var now = Date.now();
+    var diffMin = Math.round((now - then) / 60000);
+    if(isNaN(diffMin)) return "";
+    if(diffMin < 1) return "たった今";
+    if(diffMin < 60) return diffMin + "分前";
+    var diffH = Math.round(diffMin / 60);
+    if(diffH < 24) return diffH + "時間前";
+    var diffD = Math.round(diffH / 24);
+    return diffD + "日前";
+  }
+
+  var CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="#0b0c18" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  var EXTERNAL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+  var CHEV_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+
+  /* ---------------- Renderers ---------------- */
+  function renderSchedule(items){
+    var list = document.getElementById("scheduleList");
+    document.getElementById("scheduleCount").textContent = items.length + "件";
+    if(!items.length){ list.innerHTML = '<div class="card empty">予定はありません</div>'; return; }
+    list.innerHTML = items.map(function(it){
+      return '<div class="card sched">' +
+        '<span class="sched__time">' + escapeHtml(it.time) + '</span>' +
+        '<span class="sched__body">' +
+          '<div class="sched__title">' + escapeHtml(it.title) + '</div>' +
+          (it.location ? '<div class="sched__loc">' + escapeHtml(it.location) + '</div>' : '') +
+        '</span>' +
+      '</div>';
+    }).join("");
+  }
+
+  function renderTasks(items){
+    var list = document.getElementById("taskList");
+    document.getElementById("taskCount").textContent = items.length + "件";
+    if(!items.length){ list.innerHTML = '<div class="card empty">タスクはありません</div>'; return; }
+    list.innerHTML = items.map(function(it, i){
+      return '<div class="card task" data-idx="' + i + '">' +
+        '<span class="task__check">' + CHECK_ICON + '</span>' +
+        '<span class="task__body">' +
+          '<div class="task__title">' + escapeHtml(it.title) + '</div>' +
+          '<div class="task__due">' + escapeHtml(it.due) + '</div>' +
+        '</span>' +
+        '<span class="task__flag flag-' + escapeHtml(it.priority || "low") + '"></span>' +
+      '</div>';
+    }).join("");
+    list.querySelectorAll(".task").forEach(function(el){
+      el.addEventListener("click", function(){ el.classList.toggle("is-done"); });
+    });
+  }
+
+  function renderTopNews(items){
+    var list = document.getElementById("topNewsList");
+    if(!items.length){ list.innerHTML = '<div class="card empty">ニュースはありません</div>'; return; }
+    list.innerHTML = items.map(function(it, i){
+      return '<div class="card mini-news">' +
+        '<span class="mini-news__idx">' + (i + 1) + '</span>' +
+        '<span>' +
+          '<div class="mini-news__headline">' + escapeHtml(it.headline) + '</div>' +
+          '<div class="mini-news__source">' + escapeHtml(it.source) + '</div>' +
+        '</span>' +
+      '</div>';
+    }).join("");
+  }
+
+  function renderNewsFeed(container, items){
+    if(!items.length){ container.innerHTML = '<div class="card empty">記事がありません</div>'; return; }
+    container.innerHTML = items.map(function(it){
+      return '<div class="card news-card">' +
+        '<div class="news-card__top">' +
+          '<span class="news-card__source">' + escapeHtml(it.source) + '</span>' +
+          '<span class="news-card__dot"></span>' +
+          '<span class="news-card__time">' + relativeTime(it.updatedAt) + '更新</span>' +
+        '</div>' +
+        '<div class="news-card__headline">' + escapeHtml(it.headline) + '</div>' +
+        '<div class="news-card__summary">' + escapeHtml(it.summary) + '</div>' +
+        '<a class="news-card__link" href="' + encodeURI(it.url) + '" target="_blank" rel="noopener noreferrer">元記事を読む ' + EXTERNAL_ICON + '</a>' +
+      '</div>';
+    }).join("");
+  }
+
+  function renderTopics(topics){
+    var wrap = document.getElementById("topicChips");
+    var selected = topics[0];
+    wrap.innerHTML = topics.map(function(t){
+      return '<button class="chip' + (t === selected ? ' is-selected' : '') + '" data-topic="' + escapeHtml(t) + '">' + escapeHtml(t) + '</button>';
+    }).join("");
+    wrap.querySelectorAll(".chip").forEach(function(chip){
+      chip.addEventListener("click", function(){
+        wrap.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("is-selected"); });
+        chip.classList.add("is-selected");
+      });
+    });
+  }
+
+  function renderQuestions(items){
+    var list = document.getElementById("questionList");
+    document.getElementById("questionCount").textContent = items.length + "件";
+    if(!items.length){ list.innerHTML = '<div class="card empty">問題がありません</div>'; return; }
+    list.innerHTML = items.map(function(it, i){
+      return '<div class="card qcard" data-idx="' + i + '">' +
+        '<div class="qcard__head">' +
+          '<span class="qcard__topic">' + escapeHtml(it.topic) + '</span>' +
+          '<span class="qcard__q">' + escapeHtml(it.question) + '</span>' +
+          '<span class="qcard__chev">' + CHEV_ICON + '</span>' +
+        '</div>' +
+        '<div class="qcard__a-wrap"><div class="qcard__a-inner"><div class="qcard__a">' + escapeHtml(it.answer) + '</div></div></div>' +
+      '</div>';
+    }).join("");
+    list.querySelectorAll(".qcard__head").forEach(function(head){
+      head.addEventListener("click", function(){
+        head.parentElement.classList.toggle("is-open");
+      });
+    });
+  }
+
+  /* ---------------- Study: generate button ---------------- */
+  function wireGenerateButton(questions){
+    var btn = document.getElementById("generateBtn");
+    var label = document.getElementById("generateBtnLabel");
+    btn.addEventListener("click", function(){
+      if(btn.classList.contains("is-loading")) return;
+      btn.classList.add("is-loading");
+      label.textContent = "作成中…";
+      setTimeout(function(){
+        var shuffled = questions.slice().sort(function(){ return Math.random() - 0.5; });
+        renderQuestions(shuffled);
+        btn.classList.remove("is-loading");
+        label.textContent = "問題を作る";
+      }, 550);
+    });
+  }
+
+  /* ---------------- Boot ---------------- */
+  function renderError(message){
+    document.getElementById("heroSub").textContent = message;
+    ["scheduleList","taskList","topNewsList"].forEach(function(id){
+      document.getElementById(id).innerHTML = '<div class="card empty">データを読み込めませんでした</div>';
+    });
+    feeds.personal.innerHTML = '<div class="card empty">データを読み込めませんでした</div>';
+    feeds.general.innerHTML = '<div class="card empty">データを読み込めませんでした</div>';
+    document.getElementById("questionList").innerHTML = '<div class="card empty">データを読み込めませんでした</div>';
+  }
+
+  fetch("data/briefing-sample.json")
+    .then(function(res){
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function(data){
+      document.getElementById("heroSub").textContent =
+        "予定" + data.today.schedule.length + "件・タスク" + data.today.tasks.length + "件があります";
+
+      renderSchedule(data.today.schedule);
+      renderTasks(data.today.tasks);
+      renderTopNews(data.today.topNews);
+
+      renderNewsFeed(feeds.personal, data.news.personal);
+      renderNewsFeed(feeds.general, data.news.general);
+
+      renderTopics(data.study.topics);
+      renderQuestions(data.study.questions);
+      wireGenerateButton(data.study.questions);
+
+      requestAnimationFrame(function(){
+        moveIndicator(tabsIndicator, document.querySelector(".tabs__btn.is-active"), tabsNav);
+        moveIndicator(subtabsIndicator, document.querySelector(".subtabs__btn.is-active"), subtabsNav);
+      });
+    })
+    .catch(function(err){
+      console.error("briefing-sample.json の読み込みに失敗しました:", err);
+      renderError("データの読み込みに失敗しました（ローカルサーバー経由で開いてください）");
+    });
+
+  requestAnimationFrame(function(){
+    moveIndicator(tabsIndicator, document.querySelector(".tabs__btn.is-active"), tabsNav);
+    moveIndicator(subtabsIndicator, document.querySelector(".subtabs__btn.is-active"), subtabsNav);
+  });
+})();
+</script>
+</body>
+</html>
