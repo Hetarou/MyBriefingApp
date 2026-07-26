@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
+<meta name="description" content="今日の予定・ニュース・学習をひとつにまとめる、朝のブリーフィングアプリ">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%B0%3C/text%3E%3C/svg%3E">
 <title>Briefing</title>
 <style>
   :root{
@@ -50,9 +52,36 @@
 
   ::selection{ background:rgba(139,123,255,.35); }
 
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.14); border-radius:99px; border:2px solid transparent; background-clip:padding-box; }
+  ::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,.22); background-clip:padding-box; }
+
   a{ color:inherit; }
 
   button{ font:inherit; color:inherit; }
+
+  :focus-visible{
+    outline:2px solid var(--accent-b);
+    outline-offset:2px;
+    border-radius:8px;
+  }
+
+  .skeleton{
+    position:relative;
+    overflow:hidden;
+    background:var(--surface);
+  }
+  .skeleton::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+    transform:translateX(-100%);
+    animation:shimmer 1.6s infinite;
+  }
+  @keyframes shimmer{ to{ transform:translateX(100%); } }
+  .skeleton__bar{ height:12px; border-radius:6px; background:rgba(255,255,255,.09); }
+  .skeleton__row{ padding:16px; display:flex; flex-direction:column; gap:8px; }
 
   .app{
     max-width:480px;
@@ -493,7 +522,11 @@
             </span>
             <span class="section__count" id="scheduleCount"></span>
           </div>
-          <div id="scheduleList"></div>
+          <div id="scheduleList">
+            <div class="card skeleton"><div class="skeleton__row"><div class="skeleton__bar" style="width:30%"></div><div class="skeleton__bar" style="width:55%"></div></div></div>
+            <div class="card skeleton"><div class="skeleton__row"><div class="skeleton__bar" style="width:30%"></div><div class="skeleton__bar" style="width:65%"></div></div></div>
+            <div class="card skeleton"><div class="skeleton__row"><div class="skeleton__bar" style="width:30%"></div><div class="skeleton__bar" style="width:45%"></div></div></div>
+          </div>
         </div>
 
         <div class="section">
@@ -504,7 +537,11 @@
             </span>
             <span class="section__count" id="taskCount"></span>
           </div>
-          <div id="taskList"></div>
+          <div id="taskList">
+            <div class="card skeleton"><div class="skeleton__row"><div class="skeleton__bar" style="width:50%"></div><div class="skeleton__bar" style="width:30%"></div></div></div>
+            <div class="card skeleton"><div class="skeleton__row"><div class="skeleton__bar" style="width:60%"></div><div class="skeleton__bar" style="width:25%"></div></div></div>
+            <div class="card skeleton"><div class="skeleton__row"><div class="skeleton__bar" style="width:45%"></div><div class="skeleton__bar" style="width:35%"></div></div></div>
+          </div>
         </div>
 
         <div class="section">
@@ -514,7 +551,11 @@
               気になるニュース
             </span>
           </div>
-          <div id="topNewsList"></div>
+          <div id="topNewsList">
+            <div class="card skeleton"><div class="skeleton__row"><div class="skeleton__bar" style="width:80%"></div><div class="skeleton__bar" style="width:40%"></div></div></div>
+            <div class="card skeleton"><div class="skeleton__row"><div class="skeleton__bar" style="width:70%"></div><div class="skeleton__bar" style="width:35%"></div></div></div>
+            <div class="card skeleton"><div class="skeleton__row"><div class="skeleton__bar" style="width:75%"></div><div class="skeleton__bar" style="width:38%"></div></div></div>
+          </div>
         </div>
       </section>
 
@@ -525,7 +566,10 @@
           <button class="subtabs__btn is-active" data-feed="personal">あなた向け</button>
           <button class="subtabs__btn" data-feed="general">一般</button>
         </div>
-        <div class="news-feed is-active" id="feed-personal"></div>
+        <div class="news-feed is-active" id="feed-personal">
+          <div class="card skeleton" style="height:172px"></div>
+          <div class="card skeleton" style="height:172px"></div>
+        </div>
         <div class="news-feed" id="feed-general"></div>
       </section>
 
@@ -548,10 +592,17 @@
 
         <div class="section">
           <div class="section__head">
-            <span class="section__title">問題</span>
+            <span class="section__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2-3 4"/><path d="M12 17h.01"/></svg>
+              問題
+            </span>
             <span class="section__count" id="questionCount"></span>
           </div>
-          <div id="questionList"></div>
+          <div id="questionList">
+            <div class="card skeleton" style="height:56px"></div>
+            <div class="card skeleton" style="height:56px"></div>
+            <div class="card skeleton" style="height:56px"></div>
+          </div>
         </div>
       </section>
 
