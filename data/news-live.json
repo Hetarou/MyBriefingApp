@@ -1,87 +1,87 @@
 {
-  "generatedAt": "2026-07-27T06:00:00+09:00",
+  "generatedAt": "2026-07-27T16:08:16.204015+00:00",
   "personal": [
     {
       "id": "p1",
-      "headline": "新しいCSSレイアウト仕様がブラウザ主要3社に実装完了",
-      "summary": "長らく議論されていたコンテナクエリの拡張仕様が、主要ブラウザすべてで安定版に搭載された。レスポンシブ実装の手間が大きく減ると期待されている。",
-      "source": "フロントエンド ウィークリー",
-      "url": "https://example.com/articles/css-container-queries-update",
-      "updatedAt": "2026-07-27T05:40:00+09:00"
+      "headline": "「こんなのに追われたら……」急斜面もやすやす爆走、中国製の車輪付き四足ロボのデモ動画が話題　最高時速20km超",
+      "summary": "中国のロボットメーカーUnitree Roboticsは7月24日（現地時間）、車輪付きの四足ロボット「Unitree Super Athlete AS2-W」が岩場を走るデモ映像を公開した。",
+      "source": "ITmedia NEWS",
+      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news099.html",
+      "updatedAt": "2026-07-27T20:50:00+09:00"
     },
     {
       "id": "p2",
-      "headline": "個人開発者向けの新しいクラウド無料枠が発表",
-      "summary": "小規模アプリの運用を想定した無料プランが拡充され、これまで有料だった常時起動枠も一部無料化される。個人開発のハードルがさらに下がりそうだ。",
-      "source": "デベロッパーインサイト",
-      "url": "https://example.com/articles/free-tier-expansion",
-      "updatedAt": "2026-07-27T04:55:00+09:00"
+      "headline": "東野圭吾さん死去、Xなどで追悼相次ぐ　「ガリレオ」など数々の人気作、エンジニアから転身",
+      "summary": "「ガリレオ」シリーズや「白夜行」などで知られる作家の東野圭吾さんが7月23日未明、大腸がんのため死去したと、講談社が27日に発表した。68歳だった。",
+      "source": "ITmedia NEWS",
+      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news097.html",
+      "updatedAt": "2026-07-27T20:20:00+09:00"
     },
     {
       "id": "p3",
-      "headline": "在宅ワーカー向け、集中力を測る新しいアプリが話題に",
-      "summary": "作業中の入力リズムから集中度を推定し、休憩タイミングを提案するアプリがSNSで話題になっている。プライバシー面での評価も概ね好意的。",
-      "source": "ワークスタイル通信",
-      "url": "https://example.com/articles/focus-tracking-app",
-      "updatedAt": "2026-07-27T03:20:00+09:00"
+      "headline": "警視庁がミストファンを導入　機動隊員の熱中症対策で",
+      "summary": "40度以上を超える酷暑日が相次いで観測される中、警視庁が屋外で重要防護施設警備に当たる機動隊員の熱中症対策として、霧状の水を送風機で拡散する「ミストファン」を導入すると発表した。警備1課の高橋大作課長は「隊員が勤務に集中…",
+      "source": "ITmedia NEWS",
+      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news096.html",
+      "updatedAt": "2026-07-27T19:09:00+09:00"
     },
     {
       "id": "p4",
-      "headline": "週末に人気のハイキングコース、混雑予測サービスが開始",
-      "summary": "登山口の駐車場や登山道の混雑状況を事前に予測するサービスが公開された。連休前に確認しておくと計画が立てやすくなりそうだ。",
-      "source": "アウトドアマガジン",
-      "url": "https://example.com/articles/hiking-crowd-forecast",
-      "updatedAt": "2026-07-26T22:10:00+09:00"
+      "headline": "有識者はGoogleやX、Meta、ドワンゴを名指しで批判……総務省、偽広告や誹謗中傷に発信・拡散前の対策求める",
+      "summary": "総務省は7月27日、偽広告や誹謗（ひぼう）中傷、青少年保護といったインターネット上の課題を議論する有識者会議を開き、SNS事業者に求める対応について論点をまとめた。",
+      "source": "ITmedia NEWS",
+      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news095.html",
+      "updatedAt": "2026-07-27T19:05:00+09:00"
     },
     {
       "id": "p5",
-      "headline": "読書アプリに「あとで要約」機能、長文記事の消化を助ける",
-      "summary": "保存した記事をあとでまとめて要約表示できる機能が追加された。通勤時間などのすきま時間に情報をキャッチアップしやすくなる。",
-      "source": "デイリーガジェット",
-      "url": "https://example.com/articles/read-later-summary",
-      "updatedAt": "2026-07-26T21:05:00+09:00"
+      "headline": "Z世代に聞く次の流行、「AIイラスト」が1位に　「Claude Code」も上位",
+      "summary": "2026年も下半期を迎え、「Z世代」の若者たちがこれから流行ると思うものについて、市場調査会社のアスマーク（東京都渋谷区）などがインターネットでアンケートを実施した。",
+      "source": "ITmedia NEWS",
+      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news092.html",
+      "updatedAt": "2026-07-27T19:00:00+09:00"
     }
   ],
   "general": [
     {
       "id": "g1",
-      "headline": "国内消費者物価、3か月連続で伸び率が縮小",
-      "summary": "総務省が発表した最新の物価指数は前年同月比で伸びが鈍化した。エネルギー価格の落ち着きが主な要因とみられている。",
-      "source": "全国ニュースネット",
-      "url": "https://example.com/articles/cpi-slowdown",
-      "updatedAt": "2026-07-27T05:00:00+09:00"
+      "headline": "東北～九州 28日も大気不安定 土砂災害など十分注意",
+      "summary": "湿った空気の影響で長野県では27日夜、猛烈な雨が降ったとみられるなど関東甲信や東海などで雨が強まりました。東北から九州にかけては28日も局地的に非常に激しい雨が降って大雨になるおそれがあり、気象庁は土…",
+      "source": "NHKニュース",
+      "url": "https://news.web.nhk/newsweb/na/na-k10015187251000",
+      "updatedAt": "2026-07-27T22:30:15+09:00"
     },
     {
       "id": "g2",
-      "headline": "首都圏の私鉄各社、来春にダイヤ改正を発表",
-      "summary": "深夜帯の減便と朝ラッシュ時の増発を組み合わせた改正内容で、利用者からは賛否の声が上がっている。詳細な時刻表は秋に公開予定。",
-      "source": "くらしの情報局",
-      "url": "https://example.com/articles/rail-schedule-revision",
-      "updatedAt": "2026-07-27T04:30:00+09:00"
+      "headline": "“消費税減税 速やかに法案提出”高市首相会見 公約実現を強調",
+      "summary": "国会の閉会を受けて、高市総理大臣は27日夜に記者会見し、食料品の消費税減税について「国民会議」のとりまとめを受けて速やかに法案を提出する方針を示しました。また、先の衆議院選挙で訴えた公約の実現に引き続…",
+      "source": "NHKニュース",
+      "url": "https://news.web.nhk/newsweb/na/na-k10015187261000",
+      "updatedAt": "2026-07-27T19:20:58+09:00"
     },
     {
       "id": "g3",
-      "headline": "国産ワクチン開発、最終治験のデータが良好と発表",
-      "summary": "製薬会社が公表した最終段階の治験結果で、有効性・安全性ともに目標水準を上回った。年内の承認申請を目指すとしている。",
-      "source": "メディカルタイムズ",
-      "url": "https://example.com/articles/vaccine-trial-results",
-      "updatedAt": "2026-07-27T02:45:00+09:00"
+      "headline": "作家 東野圭吾さん 68歳で死去 「容疑者Xの献身」「白夜行」",
+      "summary": "「容疑者Xの献身」や「白夜行」など、数々のベストセラー小説で知られる直木賞作家の東野圭吾さんが、大腸がんのため、今月23日に亡くなりました。68歳でした。",
+      "source": "NHKニュース",
+      "url": "https://news.web.nhk/newsweb/na/na-k10015187291000",
+      "updatedAt": "2026-07-27T20:55:02+09:00"
     },
     {
       "id": "g4",
-      "headline": "猛暑続く見込み、来週にかけて熱中症警戒アラートの対象拡大",
-      "summary": "気象庁は来週にかけて広い範囲で厳しい暑さが続くと発表した。屋外活動の際はこまめな水分補給を呼びかけている。",
-      "source": "気象情報センター",
-      "url": "https://example.com/articles/heatwave-alert-expansion",
-      "updatedAt": "2026-07-27T01:15:00+09:00"
+      "headline": "北朝鮮 ロシアへ2万人追加派兵とウクライナ東部展開を議論か",
+      "summary": "ロシアのプーチン大統領と北朝鮮の外相が7月、モスクワで会談した際、北朝鮮がロシアへ2万人規模の兵士を追加で派遣し、ウクライナ東部に展開させる可能性について意見を交わしたと、ロシアの外交筋がNHKの取材…",
+      "source": "NHKニュース",
+      "url": "https://news.web.nhk/newsweb/na/na-k10015187481000",
+      "updatedAt": "2026-07-27T22:15:44+09:00"
     },
     {
       "id": "g5",
-      "headline": "地方都市の再開発計画、住民説明会に300人が参加",
-      "summary": "駅前エリアの再開発をめぐる説明会が開かれ、緑地の扱いなどについて活発な質疑があった。次回説明会は9月に予定されている。",
-      "source": "全国ニュースネット",
-      "url": "https://example.com/articles/downtown-redevelopment",
-      "updatedAt": "2026-07-26T23:50:00+09:00"
+      "headline": "台風13号発生 今後勢力を強める予想",
+      "summary": "27日午後、日本のはるか南東の太平洋で台風13号が発生しました。気象庁は、今後の情報に注意するよう呼びかけています。",
+      "source": "NHKニュース",
+      "url": "https://news.web.nhk/newsweb/na/na-k10015187271000",
+      "updatedAt": "2026-07-27T19:57:38+09:00"
     }
   ]
 }
