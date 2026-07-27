@@ -3,6 +3,8 @@
 ## 現在地
 
 - 実装順「1. 画面の枠だけ作る」が完了。UIのアクセシビリティ・操作性の追加磨き込みも実施済み。
+- ローカル保存（タスク完了状態・勉強トピック選択）を実装済み。
+- 実装順「3. 夜間RSSバッチ」のニュース部分を実装済み（下記参照）。カレンダー・タスクはまだダミーのまま。
 - 次は実装順2番。ただし内容は本リポジトリ内のどの文書にも定義されていないため未着手（下記参照）。
 
 ## 重要な注記：`BRIEFING-APP.md` は存在せず、`ROUTINE-01-skeleton.md` を仕様書として扱っている
@@ -28,6 +30,27 @@
 - 外部ライブラリ・npm・ビルド工程は使用していない
 - 追加の磨き込み：タブ/サブタブの ARIA（role=tab/tabpanel）とキーボード操作（矢印キー・Home/End によるローミングタブインデックス）、
   `prefers-reduced-motion` 対応、ノッチ端末向け safe-area-inset 余白、ローディング用シマー、チップのタップ領域拡大
+
+## ニュースの実データ連携（実装順3番の一部）
+
+- `.github/workflows/update-news.yml`：毎日 20:00 UTC（JST 5:00）に起動する GitHub Actions。
+  手動実行（workflow_dispatch）も可能
+- `scripts/fetch_news.py`：Python標準ライブラリのみで実装（pip install不要）。
+  - 一般ニュース：NHKニュース（`https://www.nhk.or.jp/rss/news/cat0.xml`）
+  - あなた向け：ITmedia NEWS（`https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml`、テック中心。
+    本物の個人最適化ではなく、固定のテック系フィードで代替している点に注意）
+  - 取得失敗時は該当セクションのみ前回データを維持し、空データで上書きしない
+  - リンクは `http`/`https` のみ許可（安全でないスキームは除外）
+- `data/news-live.json`：バッチが書き込む先。`index.html` はニュースタブと今日タブの
+  「気になるニュース」（一般の上位3件）をここから読む。`data/briefing-sample.json` からは
+  ニュース関連（`news`キー・`today.topNews`）を削除済み
+- セキュリティ対策：見出し・要約・出典は既存の `escapeHtml()` で描画、リンクは
+  クライアント側でも `safeUrl()` でスキーム検証（`javascript:`等を除外）、
+  GitHubへの書き込みは実行のたびに失効する `GITHUB_TOKEN` のみ使用（長期シークレット不要）
+- **このバッチはまだ実際に1回も実行されていない**（GitHub Actions上での初回実行待ち）。
+  RSSの実データ取得・パース処理自体はローカルで確認済みだが、
+  スクリプトの実行環境にPythonが無かったため `scripts/fetch_news.py` 自体の実行確認はできていない。
+  次回、Actionsの実行ログを確認すること
 
 ## 既知の制約
 

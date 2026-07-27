@@ -812,9 +812,18 @@
     }).join("");
   }
 
+  function safeUrl(raw){
+    try{
+      var parsed = new URL(raw, location.href);
+      if(parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
+    }catch(e){}
+    return null;
+  }
+
   function renderNewsFeed(container, items){
     if(!items.length){ container.innerHTML = '<div class="card empty">記事がありません</div>'; return; }
     container.innerHTML = items.map(function(it){
+      var href = safeUrl(it.url);
       return '<div class="card news-card">' +
         '<div class="news-card__top">' +
           '<span class="news-card__source">' + escapeHtml(it.source) + '</span>' +
@@ -823,7 +832,7 @@
         '</div>' +
         '<div class="news-card__headline">' + escapeHtml(it.headline) + '</div>' +
         '<div class="news-card__summary">' + escapeHtml(it.summary) + '</div>' +
-        '<a class="news-card__link" href="' + encodeURI(it.url) + '" target="_blank" rel="noopener noreferrer">元記事を読む ' + EXTERNAL_ICON + '</a>' +
+        (href ? '<a class="news-card__link" href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer">元記事を読む ' + EXTERNAL_ICON + '</a>' : '') +
       '</div>';
     }).join("");
   }
@@ -883,45 +892,63 @@
   }
 
   /* ---------------- Boot ---------------- */
-  function renderError(message){
-    document.getElementById("heroSub").textContent = message;
-    ["scheduleList","taskList","topNewsList"].forEach(function(id){
-      document.getElementById(id).innerHTML = '<div class="card empty">データを読み込めませんでした</div>';
+  function renderSampleError(message){
+    ["scheduleList","taskList"].forEach(function(id){
+      document.getElementById(id).innerHTML = '<div class="card empty">' + escapeHtml(message) + '</div>';
     });
-    feeds.personal.innerHTML = '<div class="card empty">データを読み込めませんでした</div>';
-    feeds.general.innerHTML = '<div class="card empty">データを読み込めませんでした</div>';
-    document.getElementById("questionList").innerHTML = '<div class="card empty">データを読み込めませんでした</div>';
+    document.getElementById("questionList").innerHTML = '<div class="card empty">' + escapeHtml(message) + '</div>';
   }
 
-  fetch("data/briefing-sample.json")
-    .then(function(res){
+  function renderNewsError(message){
+    document.getElementById("topNewsList").innerHTML = '<div class="card empty">' + escapeHtml(message) + '</div>';
+    feeds.personal.innerHTML = '<div class="card empty">' + escapeHtml(message) + '</div>';
+    feeds.general.innerHTML = '<div class="card empty">' + escapeHtml(message) + '</div>';
+  }
+
+  function loadJSONFile(path){
+    return fetch(path).then(function(res){
       if(!res.ok) throw new Error("HTTP " + res.status);
       return res.json();
-    })
-    .then(function(data){
+    });
+  }
+
+  Promise.allSettled([
+    loadJSONFile("data/briefing-sample.json"),
+    loadJSONFile("data/news-live.json")
+  ]).then(function(results){
+    var sample = results[0];
+    var news = results[1];
+
+    if(sample.status === "fulfilled"){
+      var data = sample.value;
       document.getElementById("heroSub").textContent =
         "予定" + data.today.schedule.length + "件・タスク" + data.today.tasks.length + "件があります";
-
       renderSchedule(data.today.schedule);
       renderTasks(data.today.tasks);
-      renderTopNews(data.today.topNews);
-
-      renderNewsFeed(feeds.personal, data.news.personal);
-      renderNewsFeed(feeds.general, data.news.general);
-
       renderTopics(data.study.topics);
       renderQuestions(data.study.questions);
       wireGenerateButton(data.study.questions);
+    }else{
+      console.error("briefing-sample.json の読み込みに失敗しました:", sample.reason);
+      document.getElementById("heroSub").textContent = "データの読み込みに失敗しました（ローカルサーバー経由で開いてください）";
+      renderSampleError("データを読み込めませんでした");
+    }
 
-      requestAnimationFrame(function(){
-        moveIndicator(tabsIndicator, document.querySelector(".tabs__btn.is-active"), tabsNav);
-        moveIndicator(subtabsIndicator, document.querySelector(".subtabs__btn.is-active"), subtabsNav);
-      });
-    })
-    .catch(function(err){
-      console.error("briefing-sample.json の読み込みに失敗しました:", err);
-      renderError("データの読み込みに失敗しました（ローカルサーバー経由で開いてください）");
+    if(news.status === "fulfilled"){
+      var newsData = news.value;
+      renderTopNews(newsData.general.slice(0, 3));
+      renderNewsFeed(feeds.personal, newsData.personal);
+      renderNewsFeed(feeds.general, newsData.general);
+    }else{
+      console.error("news-live.json の読み込みに失敗しました:", news.reason);
+      renderNewsError("ニュースを読み込めませんでした");
+    }
+
+    requestAnimationFrame(function(){
+      moveIndicator(tabsIndicator, document.querySelector(".tabs__btn.is-active"), tabsNav);
+      moveIndicator(subtabsIndicator, document.querySelector(".subtabs__btn.is-active"), subtabsNav);
     });
+  });
 
   requestAnimationFrame(function(){
     moveIndicator(tabsIndicator, document.querySelector(".tabs__btn.is-active"), tabsNav);
