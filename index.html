@@ -86,7 +86,15 @@
   .app{
     max-width:480px;
     margin:0 auto;
-    padding:22px 18px 8px;
+    padding:calc(22px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.001ms !important;
+    }
   }
 
   /* ---------- Header ---------- */
@@ -395,7 +403,7 @@
     margin-bottom:18px;
   }
   .chip{
-    padding:9px 15px;
+    padding:11px 16px;
     font-size:13px; font-weight:700;
     border-radius:var(--pill);
     background:var(--surface);
@@ -505,9 +513,9 @@
 
     <nav class="tabs" role="tablist" aria-label="表示切り替え">
       <span class="tabs__indicator" id="tabsIndicator"></span>
-      <button class="tabs__btn is-active" id="tab-today" data-tab="today" role="tab" aria-selected="true" aria-controls="panel-today">今日</button>
-      <button class="tabs__btn" id="tab-news" data-tab="news" role="tab" aria-selected="false" aria-controls="panel-news">ニュース</button>
-      <button class="tabs__btn" id="tab-study" data-tab="study" role="tab" aria-selected="false" aria-controls="panel-study">勉強</button>
+      <button class="tabs__btn is-active" id="tab-today" data-tab="today" role="tab" aria-selected="true" aria-controls="panel-today" tabindex="0">今日</button>
+      <button class="tabs__btn" id="tab-news" data-tab="news" role="tab" aria-selected="false" aria-controls="panel-news" tabindex="-1">ニュース</button>
+      <button class="tabs__btn" id="tab-study" data-tab="study" role="tab" aria-selected="false" aria-controls="panel-study" tabindex="-1">勉強</button>
     </nav>
 
     <main class="panels">
@@ -563,8 +571,8 @@
       <section class="panel" id="panel-news" data-panel="news" role="tabpanel" aria-labelledby="tab-news">
         <div class="subtabs" role="tablist" aria-label="ニュースの種類">
           <span class="subtabs__indicator" id="subtabsIndicator"></span>
-          <button class="subtabs__btn is-active" id="subtab-personal" data-feed="personal" role="tab" aria-selected="true" aria-controls="feed-personal">あなた向け</button>
-          <button class="subtabs__btn" id="subtab-general" data-feed="general" role="tab" aria-selected="false" aria-controls="feed-general">一般</button>
+          <button class="subtabs__btn is-active" id="subtab-personal" data-feed="personal" role="tab" aria-selected="true" aria-controls="feed-personal" tabindex="0">あなた向け</button>
+          <button class="subtabs__btn" id="subtab-general" data-feed="general" role="tab" aria-selected="false" aria-controls="feed-general" tabindex="-1">一般</button>
         </div>
         <div class="news-feed is-active" id="feed-personal" role="tabpanel" aria-labelledby="subtab-personal">
           <div class="card skeleton" style="height:172px"></div>
@@ -641,12 +649,16 @@
     indicator.style.transform = "translateX(" + x + "px)";
   }
 
-  function activateTab(name){
+  function activateTab(name, focus){
     tabBtns.forEach(function(b){
       var active = b.dataset.tab === name;
       b.classList.toggle("is-active", active);
       b.setAttribute("aria-selected", active ? "true" : "false");
-      if(active) moveIndicator(tabsIndicator, b, tabsNav);
+      b.setAttribute("tabindex", active ? "0" : "-1");
+      if(active){
+        moveIndicator(tabsIndicator, b, tabsNav);
+        if(focus) b.focus();
+      }
     });
     panels.forEach(function(p){
       p.classList.toggle("is-active", p.dataset.panel === name);
@@ -656,6 +668,19 @@
   tabBtns.forEach(function(btn){
     btn.addEventListener("click", function(){ activateTab(btn.dataset.tab); });
   });
+
+  function wireRovingTabs(btns, activate){
+    btns.forEach(function(btn, i){
+      btn.addEventListener("keydown", function(e){
+        var dir = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : e.key === "Home" ? "home" : e.key === "End" ? "end" : null;
+        if(dir === null) return;
+        e.preventDefault();
+        var nextIdx = dir === "home" ? 0 : dir === "end" ? btns.length - 1 : (i + dir + btns.length) % btns.length;
+        activate(btns[nextIdx].dataset.tab || btns[nextIdx].dataset.feed, true);
+      });
+    });
+  }
+  wireRovingTabs(tabBtns, activateTab);
 
   window.addEventListener("resize", function(){
     var active = tabBtns.find ? tabBtns.find(function(b){ return b.classList.contains("is-active"); })
@@ -674,12 +699,16 @@
     general: document.getElementById("feed-general")
   };
 
-  function activateFeed(name){
+  function activateFeed(name, focus){
     subtabBtns.forEach(function(b){
       var active = b.dataset.feed === name;
       b.classList.toggle("is-active", active);
       b.setAttribute("aria-selected", active ? "true" : "false");
-      if(active) moveIndicator(subtabsIndicator, b, subtabsNav);
+      b.setAttribute("tabindex", active ? "0" : "-1");
+      if(active){
+        moveIndicator(subtabsIndicator, b, subtabsNav);
+        if(focus) b.focus();
+      }
     });
     Object.keys(feeds).forEach(function(k){
       feeds[k].classList.toggle("is-active", k === name);
@@ -689,6 +718,7 @@
   subtabBtns.forEach(function(btn){
     btn.addEventListener("click", function(){ activateFeed(btn.dataset.feed); });
   });
+  wireRovingTabs(subtabBtns, activateFeed);
 
   /* ---------------- Helpers ---------------- */
   function escapeHtml(str){
