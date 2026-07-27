@@ -23,20 +23,56 @@ DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "news-live.json"
 REQUEST_TIMEOUT = 15
 USER_AGENT = "Mozilla/5.0 (compatible; BriefingAppNewsBot/1.0)"
 
-FEEDS = {
-    "general": {
-        "url": "https://www.nhk.or.jp/rss/news/cat0.xml",
-        "source": "NHKニュース",
-        "id_prefix": "g",
-        "count": 5,
-    },
-    "personal": {
+GENERAL_FEED = {
+    "url": "https://www.nhk.or.jp/rss/news/cat0.xml",
+    "source": "NHKニュース",
+    "id_prefix": "g",
+    "count": 5,
+}
+
+# "あなた向け" タグ。実装順2番：タグ選択でニュースの種類を切り替えられるようにする。
+PERSONAL_CATEGORIES = [
+    {
+        "id": "tech",
+        "label": "テクノロジー",
         "url": "https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml",
         "source": "ITmedia NEWS",
-        "id_prefix": "p",
+        "id_prefix": "tech",
         "count": 5,
     },
-}
+    {
+        "id": "economy",
+        "label": "経済",
+        "url": "https://www.nhk.or.jp/rss/news/cat5.xml",
+        "source": "NHKニュース",
+        "id_prefix": "economy",
+        "count": 5,
+    },
+    {
+        "id": "world",
+        "label": "国際",
+        "url": "https://www.nhk.or.jp/rss/news/cat6.xml",
+        "source": "NHKニュース",
+        "id_prefix": "world",
+        "count": 5,
+    },
+    {
+        "id": "sports",
+        "label": "スポーツ",
+        "url": "https://www.nhk.or.jp/rss/news/cat7.xml",
+        "source": "NHKニュース",
+        "id_prefix": "sports",
+        "count": 5,
+    },
+    {
+        "id": "entertainment",
+        "label": "エンタメ",
+        "url": "https://www.nhk.or.jp/rss/news/cat2.xml",
+        "source": "NHKニュース",
+        "id_prefix": "ent",
+        "count": 5,
+    },
+]
 
 TAG_RE = re.compile(r"<[^>]+>")
 SUMMARY_MAX_CHARS = 110
@@ -109,23 +145,41 @@ def load_existing():
             return json.loads(DATA_PATH.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             pass
-    return {"generatedAt": None, "personal": [], "general": []}
+    return {"generatedAt": None, "general": [], "personalCategories": []}
 
 
 def main():
     data = load_existing()
+    existing_categories = {c["id"]: c for c in data.get("personalCategories", [])}
     had_error = False
 
-    for key, cfg in FEEDS.items():
+    try:
+        data["general"] = fetch_feed(
+            GENERAL_FEED["url"], GENERAL_FEED["source"], GENERAL_FEED["id_prefix"], GENERAL_FEED["count"]
+        )
+        print("[ok] general: {} items from {}".format(len(data["general"]), GENERAL_FEED["url"]))
+    except Exception as exc:  # noqa: BLE001 - keep the batch alive on any single feed failure
+        had_error = True
+        print("[warn] general: fetch failed ({}), keeping previous data".format(exc), file=sys.stderr)
+        data.setdefault("general", [])
+
+    new_categories = []
+    for cfg in PERSONAL_CATEGORIES:
         try:
-            data[key] = fetch_feed(cfg["url"], cfg["source"], cfg["id_prefix"], cfg["count"])
-            print("[ok] {}: {} items from {}".format(key, len(data[key]), cfg["url"]))
+            items = fetch_feed(cfg["url"], cfg["source"], cfg["id_prefix"], cfg["count"])
+            new_categories.append({"id": cfg["id"], "label": cfg["label"], "items": items})
+            print("[ok] {}: {} items from {}".format(cfg["id"], len(items), cfg["url"]))
         except Exception as exc:  # noqa: BLE001 - keep the batch alive on any single feed failure
             had_error = True
             print(
-                "[warn] {}: fetch failed ({}), keeping previous data".format(key, exc),
+                "[warn] {}: fetch failed ({}), keeping previous data".format(cfg["id"], exc),
                 file=sys.stderr,
             )
+            fallback = existing_categories.get(cfg["id"])
+            new_categories.append(
+                fallback if fallback else {"id": cfg["id"], "label": cfg["label"], "items": []}
+            )
+    data["personalCategories"] = new_categories
 
     data["generatedAt"] = datetime.now(timezone.utc).isoformat()
 
@@ -135,7 +189,7 @@ def main():
     )
     print("wrote {}".format(DATA_PATH))
 
-    if had_error and not data["personal"] and not data["general"]:
+    if had_error and not data["general"] and not any(c["items"] for c in data["personalCategories"]):
         sys.exit(1)
 
 

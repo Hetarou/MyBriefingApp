@@ -1,47 +1,5 @@
 {
   "generatedAt": "2026-07-27T16:08:16.204015+00:00",
-  "personal": [
-    {
-      "id": "p1",
-      "headline": "「こんなのに追われたら……」急斜面もやすやす爆走、中国製の車輪付き四足ロボのデモ動画が話題　最高時速20km超",
-      "summary": "中国のロボットメーカーUnitree Roboticsは7月24日（現地時間）、車輪付きの四足ロボット「Unitree Super Athlete AS2-W」が岩場を走るデモ映像を公開した。",
-      "source": "ITmedia NEWS",
-      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news099.html",
-      "updatedAt": "2026-07-27T20:50:00+09:00"
-    },
-    {
-      "id": "p2",
-      "headline": "東野圭吾さん死去、Xなどで追悼相次ぐ　「ガリレオ」など数々の人気作、エンジニアから転身",
-      "summary": "「ガリレオ」シリーズや「白夜行」などで知られる作家の東野圭吾さんが7月23日未明、大腸がんのため死去したと、講談社が27日に発表した。68歳だった。",
-      "source": "ITmedia NEWS",
-      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news097.html",
-      "updatedAt": "2026-07-27T20:20:00+09:00"
-    },
-    {
-      "id": "p3",
-      "headline": "警視庁がミストファンを導入　機動隊員の熱中症対策で",
-      "summary": "40度以上を超える酷暑日が相次いで観測される中、警視庁が屋外で重要防護施設警備に当たる機動隊員の熱中症対策として、霧状の水を送風機で拡散する「ミストファン」を導入すると発表した。警備1課の高橋大作課長は「隊員が勤務に集中…",
-      "source": "ITmedia NEWS",
-      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news096.html",
-      "updatedAt": "2026-07-27T19:09:00+09:00"
-    },
-    {
-      "id": "p4",
-      "headline": "有識者はGoogleやX、Meta、ドワンゴを名指しで批判……総務省、偽広告や誹謗中傷に発信・拡散前の対策求める",
-      "summary": "総務省は7月27日、偽広告や誹謗（ひぼう）中傷、青少年保護といったインターネット上の課題を議論する有識者会議を開き、SNS事業者に求める対応について論点をまとめた。",
-      "source": "ITmedia NEWS",
-      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news095.html",
-      "updatedAt": "2026-07-27T19:05:00+09:00"
-    },
-    {
-      "id": "p5",
-      "headline": "Z世代に聞く次の流行、「AIイラスト」が1位に　「Claude Code」も上位",
-      "summary": "2026年も下半期を迎え、「Z世代」の若者たちがこれから流行ると思うものについて、市場調査会社のアスマーク（東京都渋谷区）などがインターネットでアンケートを実施した。",
-      "source": "ITmedia NEWS",
-      "url": "https://www.itmedia.co.jp/news/articles/2607/27/news092.html",
-      "updatedAt": "2026-07-27T19:00:00+09:00"
-    }
-  ],
   "general": [
     {
       "id": "g1",
@@ -82,6 +40,74 @@
       "source": "NHKニュース",
       "url": "https://news.web.nhk/newsweb/na/na-k10015187271000",
       "updatedAt": "2026-07-27T19:57:38+09:00"
+    }
+  ],
+  "personalCategories": [
+    {
+      "id": "tech",
+      "label": "テクノロジー",
+      "items": [
+        {
+          "id": "tech1",
+          "headline": "「こんなのに追われたら……」急斜面もやすやす爆走、中国製の車輪付き四足ロボのデモ動画が話題　最高時速20km超",
+          "summary": "中国のロボットメーカーUnitree Roboticsは7月24日（現地時間）、車輪付きの四足ロボット「Unitree Super Athlete AS2-W」が岩場を走るデモ映像を公開した。",
+          "source": "ITmedia NEWS",
+          "url": "https://www.itmedia.co.jp/news/articles/2607/27/news099.html",
+          "updatedAt": "2026-07-27T20:50:00+09:00"
+        },
+        {
+          "id": "tech2",
+          "headline": "東野圭吾さん死去、Xなどで追悼相次ぐ　「ガリレオ」など数々の人気作、エンジニアから転身",
+          "summary": "「ガリレオ」シリーズや「白夜行」などで知られる作家の東野圭吾さんが7月23日未明、大腸がんのため死去したと、講談社が27日に発表した。68歳だった。",
+          "source": "ITmedia NEWS",
+          "url": "https://www.itmedia.co.jp/news/articles/2607/27/news097.html",
+          "updatedAt": "2026-07-27T20:20:00+09:00"
+        },
+        {
+          "id": "tech3",
+          "headline": "警視庁がミストファンを導入　機動隊員の熱中症対策で",
+          "summary": "40度以上を超える酷暑日が相次いで観測される中、警視庁が屋外で重要防護施設警備に当たる機動隊員の熱中症対策として、霧状の水を送風機で拡散する「ミストファン」を導入すると発表した。",
+          "source": "ITmedia NEWS",
+          "url": "https://www.itmedia.co.jp/news/articles/2607/27/news096.html",
+          "updatedAt": "2026-07-27T19:09:00+09:00"
+        },
+        {
+          "id": "tech4",
+          "headline": "有識者はGoogleやX、Meta、ドワンゴを名指しで批判……総務省、偽広告や誹謗中傷に発信・拡散前の対策求める",
+          "summary": "総務省は7月27日、偽広告や誹謗（ひぼう）中傷、青少年保護といったインターネット上の課題を議論する有識者会議を開き、SNS事業者に求める対応について論点をまとめた。",
+          "source": "ITmedia NEWS",
+          "url": "https://www.itmedia.co.jp/news/articles/2607/27/news095.html",
+          "updatedAt": "2026-07-27T19:05:00+09:00"
+        },
+        {
+          "id": "tech5",
+          "headline": "Z世代に聞く次の流行、「AIイラスト」が1位に　「Claude Code」も上位",
+          "summary": "2026年も下半期を迎え、「Z世代」の若者たちがこれから流行ると思うものについて、市場調査会社のアスマークなどがインターネットでアンケートを実施した。",
+          "source": "ITmedia NEWS",
+          "url": "https://www.itmedia.co.jp/news/articles/2607/27/news092.html",
+          "updatedAt": "2026-07-27T19:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "id": "economy",
+      "label": "経済",
+      "items": []
+    },
+    {
+      "id": "world",
+      "label": "国際",
+      "items": []
+    },
+    {
+      "id": "sports",
+      "label": "スポーツ",
+      "items": []
+    },
+    {
+      "id": "entertainment",
+      "label": "エンタメ",
+      "items": []
     }
   ]
 }

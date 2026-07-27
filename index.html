@@ -575,8 +575,11 @@
           <button class="subtabs__btn" id="subtab-general" data-feed="general" role="tab" aria-selected="false" aria-controls="feed-general" tabindex="-1">一般</button>
         </div>
         <div class="news-feed is-active" id="feed-personal" role="tabpanel" aria-labelledby="subtab-personal">
-          <div class="card skeleton" style="height:172px"></div>
-          <div class="card skeleton" style="height:172px"></div>
+          <div class="chips" id="newsCategoryChips"></div>
+          <div id="personalNewsList">
+            <div class="card skeleton" style="height:172px"></div>
+            <div class="card skeleton" style="height:172px"></div>
+          </div>
         </div>
         <div class="news-feed" id="feed-general" role="tabpanel" aria-labelledby="subtab-general"></div>
       </section>
@@ -698,6 +701,8 @@
     personal: document.getElementById("feed-personal"),
     general: document.getElementById("feed-general")
   };
+  var personalNewsList = document.getElementById("personalNewsList");
+  var newsCategoryChipsEl = document.getElementById("newsCategoryChips");
 
   function activateFeed(name, focus){
     subtabBtns.forEach(function(b){
@@ -853,6 +858,34 @@
     });
   }
 
+  function renderNewsCategoryChips(categories){
+    var wrap = newsCategoryChipsEl;
+    if(!categories.length){ wrap.innerHTML = ""; renderNewsFeed(personalNewsList, []); return; }
+    var saved = loadJSON("selectedNewsCategory", null);
+    var validIds = categories.map(function(c){ return c.id; });
+    var selectedId = (saved && validIds.indexOf(saved) !== -1) ? saved : categories[0].id;
+
+    wrap.innerHTML = categories.map(function(c){
+      return '<button class="chip' + (c.id === selectedId ? ' is-selected' : '') + '" data-category="' + escapeHtml(c.id) + '">' + escapeHtml(c.label) + '</button>';
+    }).join("");
+
+    function selectCategory(id){
+      var cat = categories.filter(function(c){ return c.id === id; })[0];
+      renderNewsFeed(personalNewsList, cat ? cat.items : []);
+    }
+
+    wrap.querySelectorAll(".chip").forEach(function(chip){
+      chip.addEventListener("click", function(){
+        wrap.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("is-selected"); });
+        chip.classList.add("is-selected");
+        saveJSON("selectedNewsCategory", chip.dataset.category);
+        selectCategory(chip.dataset.category);
+      });
+    });
+
+    selectCategory(selectedId);
+  }
+
   function renderQuestions(items){
     var list = document.getElementById("questionList");
     document.getElementById("questionCount").textContent = items.length + "件";
@@ -901,7 +934,8 @@
 
   function renderNewsError(message){
     document.getElementById("topNewsList").innerHTML = '<div class="card empty">' + escapeHtml(message) + '</div>';
-    feeds.personal.innerHTML = '<div class="card empty">' + escapeHtml(message) + '</div>';
+    newsCategoryChipsEl.innerHTML = "";
+    personalNewsList.innerHTML = '<div class="card empty">' + escapeHtml(message) + '</div>';
     feeds.general.innerHTML = '<div class="card empty">' + escapeHtml(message) + '</div>';
   }
 
@@ -937,7 +971,7 @@
     if(news.status === "fulfilled"){
       var newsData = news.value;
       renderTopNews(newsData.general.slice(0, 3));
-      renderNewsFeed(feeds.personal, newsData.personal);
+      renderNewsCategoryChips(newsData.personalCategories);
       renderNewsFeed(feeds.general, newsData.general);
     }else{
       console.error("news-live.json の読み込みに失敗しました:", news.reason);
