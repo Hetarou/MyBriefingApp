@@ -7,9 +7,9 @@
       { "time": "19:00", "title": "オンライン英会話", "location": "Zoom" }
     ],
     "tasks": [
-      { "title": "月次レポートの提出", "due": "今日 17:00まで", "priority": "high" },
-      { "title": "経費精算の申請", "due": "明日まで", "priority": "medium" },
-      { "title": "図書館の本を返却", "due": "7/29まで", "priority": "low" }
+      { "id": "t1", "title": "月次レポートの提出", "due": "今日 17:00まで", "priority": "high" },
+      { "id": "t2", "title": "経費精算の申請", "due": "明日まで", "priority": "medium" },
+      { "id": "t3", "title": "図書館の本を返却", "due": "7/29まで", "priority": "low" }
     ],
     "topNews": [
       { "headline": "新型AIチップが量産開始、価格は2割下落の見通し", "source": "テックニュース速報" },
