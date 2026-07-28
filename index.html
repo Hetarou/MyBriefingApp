@@ -6,6 +6,9 @@
 <meta name="color-scheme" content="dark">
 <meta name="description" content="今日の予定・ニュース・学習をひとつにまとめる、朝のブリーフィングアプリ">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%B0%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#080a12">
 <title>Briefing</title>
 <style>
   :root{
@@ -433,11 +436,19 @@
     display:flex; align-items:center; justify-content:center; gap:8px;
     box-shadow:var(--shadow-pop);
     transition:transform .2s var(--ease), box-shadow .2s var(--ease);
-    margin-bottom:22px;
+    margin-bottom:8px;
   }
   .generate-btn:active{ transform:scale(.98); }
   .generate-btn svg{ width:17px; height:17px; transition:transform .5s var(--ease); }
   .generate-btn.is-loading svg{ animation:spin 1s linear infinite; }
+
+  .generate-note{
+    font-size:12px;
+    color:var(--text-2);
+    text-align:center;
+    min-height:1.4em;
+    margin:0 0 18px;
+  }
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
   .qcard{
@@ -600,6 +611,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
           <span id="generateBtnLabel">問題を作る</span>
         </button>
+        <p class="generate-note" id="generateNote"></p>
 
         <div class="section">
           <div class="section__head">
@@ -842,10 +854,13 @@
     }).join("");
   }
 
+  var currentStudyTopic = null;
+
   function renderTopics(topics){
     var wrap = document.getElementById("topicChips");
     var saved = loadJSON("selectedTopic", null);
     var selected = (saved && topics.indexOf(saved) !== -1) ? saved : topics[0];
+    currentStudyTopic = selected;
     wrap.innerHTML = topics.map(function(t){
       return '<button class="chip' + (t === selected ? ' is-selected' : '') + '" data-topic="' + escapeHtml(t) + '">' + escapeHtml(t) + '</button>';
     }).join("");
@@ -853,6 +868,7 @@
       chip.addEventListener("click", function(){
         wrap.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("is-selected"); });
         chip.classList.add("is-selected");
+        currentStudyTopic = chip.dataset.topic;
         saveJSON("selectedTopic", chip.dataset.topic);
       });
     });
@@ -908,19 +924,51 @@
   }
 
   /* ---------------- Study: generate button ---------------- */
-  function wireGenerateButton(questions){
+  function pickStaticQuestions(allQuestions, topic){
+    var pool = allQuestions.filter(function(q){ return q.topic === topic; });
+    if(!pool.length) pool = allQuestions;
+    return pool.slice().sort(function(){ return Math.random() - 0.5; }).slice(0, 3);
+  }
+
+  function fetchAIQuestions(topic){
+    return fetch("api/generate-questions", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ topic: topic })
+    }).then(function(res){
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    }).then(function(data){
+      if(!data || !Array.isArray(data.questions) || !data.questions.length){
+        throw new Error("empty response");
+      }
+      return data.questions;
+    });
+  }
+
+  function wireGenerateButton(staticQuestions){
     var btn = document.getElementById("generateBtn");
     var label = document.getElementById("generateBtnLabel");
+    var note = document.getElementById("generateNote");
     btn.addEventListener("click", function(){
       if(btn.classList.contains("is-loading")) return;
       btn.classList.add("is-loading");
       label.textContent = "作成中…";
-      setTimeout(function(){
-        var shuffled = questions.slice().sort(function(){ return Math.random() - 0.5; });
-        renderQuestions(shuffled);
-        btn.classList.remove("is-loading");
-        label.textContent = "問題を作る";
-      }, 550);
+      note.textContent = "";
+
+      fetchAIQuestions(currentStudyTopic)
+        .then(function(aiQuestions){
+          renderQuestions(aiQuestions);
+        })
+        .catch(function(err){
+          console.error("AIによる問題生成に失敗しました:", err);
+          renderQuestions(pickStaticQuestions(staticQuestions, currentStudyTopic));
+          note.textContent = "AIによる生成が利用できなかったため、用意された問題を表示しています";
+        })
+        .then(function(){
+          btn.classList.remove("is-loading");
+          label.textContent = "問題を作る";
+        });
     });
   }
 
@@ -960,7 +1008,7 @@
       renderSchedule(data.today.schedule);
       renderTasks(data.today.tasks);
       renderTopics(data.study.topics);
-      renderQuestions(data.study.questions);
+      renderQuestions(pickStaticQuestions(data.study.questions, currentStudyTopic));
       wireGenerateButton(data.study.questions);
     }else{
       console.error("briefing-sample.json の読み込みに失敗しました:", sample.reason);
@@ -988,6 +1036,14 @@
     moveIndicator(tabsIndicator, document.querySelector(".tabs__btn.is-active"), tabsNav);
     moveIndicator(subtabsIndicator, document.querySelector(".subtabs__btn.is-active"), subtabsNav);
   });
+
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(err){
+        console.error("Service worker の登録に失敗しました:", err);
+      });
+    });
+  }
 })();
 </script>
 </body>

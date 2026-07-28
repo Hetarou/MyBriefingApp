@@ -5,7 +5,10 @@
 - 実装順「1. 画面の枠だけ作る」が完了。UIのアクセシビリティ・操作性の追加磨き込みも実施済み。
 - ローカル保存（タスク完了状態・勉強トピック選択）を実装済み。
 - 実装順「3. 夜間RSSバッチ」のニュース部分を実装・動作確認済み（下記参照）。カレンダー・タスクはまだダミーのまま。
-- 実装順2番「あなた向けニュースのタグ選択」を実装・動作確認済み（下記参照）。次は4〜6番の着手判断待ち。
+- 実装順2番「あなた向けニュースのタグ選択」を実装・動作確認済み（下記参照）。
+- 実装順5番（勉強タブの問題をGemini APIで生成）と実装順6番（PWA対応）を、
+  Cloudflare Pages + Pages Functionsを土台にまとめて実装済み。**ただしCloudflare側の
+  デプロイ・環境変数設定が未完了のため、実機での動作確認はまだできていない**（下記参照）。
 
 ## 重要な注記：`BRIEFING-APP.md` は存在せず、`ROUTINE-01-skeleton.md` を仕様書として扱っている
 
@@ -68,6 +71,48 @@
   実データが1回も取得されていない（プレースホルダーの空配列）。次回のバッチ実行
   （スケジュール、または手動のworkflow_dispatch）で実データに置き換わる
 
+## Gemini APIによる問題生成 + PWA対応（実装順5番・6番）
+
+個人専用でPWA化したい、という要望と、勉強タブの問題をAIで生成したいという要望を
+まとめて実現するため、静的サイトのままではPWA（Service Worker）が動かせない
+（`https://`等の安全なオリジンが必須）ことから、Cloudflare Pagesにデプロイする構成にした。
+
+**構成**
+- `functions/api/generate-questions.js`：Cloudflare Pages Function。
+  `POST /api/generate-questions` に `{topic}` を送ると、Gemini API
+  （`gemini-3.6-flash`、無料枠）を呼び出して問題3問を生成して返す
+  - APIキーは`env.GEMINI_API_KEY`としてCloudflare側の環境変数（Secret）からのみ参照。
+    コードにもリポジトリにも一切含まれない
+  - `topic`は勉強タブの5種類の固定値のみ許可（自由入力不可）。ユーザー入力由来の
+    テキストがプロンプトに一切含まれないため、プロンプトインジェクションの余地がない
+  - レート制限を二重に実装：`QUIZ_KV`（KV名前空間）を使い、IP単位で1時間20回まで、
+    全体で1日100回まで。超えた場合は429を返す
+  - Gemini呼び出し失敗・レート制限超過など、あらゆる失敗時はエラーの詳細を返さず
+    `{error: "..."}`とステータスコードのみ返す
+- `index.html`：「問題を作る」ボタンはまず`/api/generate-questions`を呼び、
+  失敗したら`data/briefing-sample.json`内の静的な問題バンク（下記）から選んだ問題に
+  自動でフォールバックし、その旨を画面に小さく表示する
+- `data/briefing-sample.json`：静的な問題バンクを3問→**40問**（5トピック×8問）に拡充。
+  AI生成が使えない場合でも、ある程度のバリエーションが出るようにするため
+- `manifest.json` / `icon.svg` / `icon-maskable.svg` / `sw.js`：PWA対応一式。
+  Service Workerはアプリの殻（index.html等）をcache-first、
+  `data/*.json`をstale-while-revalidate（キャッシュを即表示しつつ裏で更新）、
+  `/api/*`は常にキャッシュせずネットワークに投げる方針
+
+**まだ動作確認できていないこと（Cloudflare側の手動セットアップが必要）**
+このリポジトリのコードは書き終えているが、以下はアカウント操作が必要なため
+作者側で行う必要がある：
+1. Google AI StudioでGemini APIキーを発行（無料枠）
+2. Cloudflareダッシュボードで「Workers & Pages」→「Create」→「Pages」→
+   「Connect to Git」で `Hetarou/MyBriefingApp` リポジトリ（`claude/briefing-app-skeleton`
+   ブランチ）に接続。ビルド設定はフレームワークなし、ビルドコマンドは空、
+   出力ディレクトリはリポジトリのルート（`/`）
+3. KV Namespaceを作成し（例：`briefing-app-quiz-kv`）、Pagesプロジェクトの
+   Settings → Functions → KV namespace bindings で変数名 `QUIZ_KV` として紐付け
+4. Pagesプロジェクトの Settings → Environment variables で `GEMINI_API_KEY` を
+   Secret（暗号化）として登録
+5. 上記完了後、実際に問題生成が動くか・PWAとしてホーム画面に追加できるかを確認する
+
 ## 既知の制約
 
 - `fetch("data/briefing-sample.json")` はローカルサーバー経由（`http://`）を前提にしている。
@@ -77,8 +122,6 @@
 ## やらないこと（今回のスコープ外）
 
 - Google カレンダー連携（実装順4番）
-- Claude API の呼び出し（実装順5番）
-- PWA 対応（実装順6番）
 - 外部ライブラリの利用、npm、ビルドツール
 - 未読管理・通知・成績記録
 - README 以外のドキュメントの追加
