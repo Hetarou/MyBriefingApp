@@ -42,7 +42,13 @@ function buildPrompt(topic) {
 
 async function handleGenerateQuestions(request, env) {
   if (!env.GEMINI_API_KEY || !env.QUIZ_KV) {
-    return jsonError("サーバー設定エラー", 500);
+    // TEMPORARY debug detail, remove once the binding issue is diagnosed.
+    return Response.json({
+      error: "サーバー設定エラー",
+      debugEnvKeys: Object.keys(env),
+      debugHasGeminiKey: !!env.GEMINI_API_KEY,
+      debugHasQuizKv: !!env.QUIZ_KV,
+    }, { status: 500 });
   }
 
   let body;
