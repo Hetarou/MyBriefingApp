@@ -109,7 +109,9 @@ async function handleGenerateQuestions(request, env) {
   }
 
   if (!geminiRes.ok) {
-    return jsonError("生成に失敗しました", 502);
+    // TEMPORARY debug detail, remove once the response shape is confirmed.
+    const bodyText = await geminiRes.text();
+    return Response.json({ error: "生成に失敗しました", debugStatus: geminiRes.status, debugBody: bodyText }, { status: 502 });
   }
 
   let data;
@@ -124,7 +126,8 @@ async function handleGenerateQuestions(request, env) {
     const text = data.candidates[0].content.parts[0].text;
     questions = JSON.parse(text).questions;
   } catch (e) {
-    return jsonError("生成結果の形式が不正です", 502);
+    // TEMPORARY debug detail, remove once the response shape is confirmed.
+    return Response.json({ error: "生成結果の形式が不正です", debug: data }, { status: 502 });
   }
 
   if (!Array.isArray(questions)) {
