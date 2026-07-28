@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mybriefingapp",
+  "main": "worker.js",
+  "compatibility_date": "2026-07-28",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS"
+  }
+}

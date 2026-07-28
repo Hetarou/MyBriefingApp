@@ -1,0 +1,7 @@
+worker.js
+wrangler.jsonc
+scripts/
+.github/
+.git/
+.assetsignore
+*.md

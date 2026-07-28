@@ -1,13 +1,17 @@
-// Cloudflare Pages Function: POST /api/generate-questions
+// Cloudflare Worker entry point (replaces the classic Pages Functions
+// /functions folder, which isn't auto-detected under the current unified
+// "Workers with static assets" model). Handles POST /api/generate-questions
+// itself; everything else falls through to the static asset binding.
 //
-// Proxies a quiz-question request to the Gemini API. The API key lives only
-// in this server-side environment (Cloudflare Pages "Environment variables"),
-// never in client code. The client sends a fixed topic id (not free text),
-// so there is no user-controlled text in the prompt at all.
+// The Gemini API key lives only in this Worker's environment variables
+// (Cloudflare dashboard "Variables and Secrets"), never in this repo. The
+// client sends a fixed topic id (not free text), so there is no
+// user-controlled text in the prompt at all.
 //
 // Rate limiting is layered (per-IP hourly + global daily) via a KV
-// namespace bound as QUIZ_KV, to keep a public, unauthenticated endpoint
-// from running up API usage if the URL is ever found by someone else.
+// namespace bound as QUIZ_KV, to keep this public, unauthenticated
+// endpoint from running up API usage if the URL is ever found by someone
+// else.
 
 const ALLOWED_TOPICS = ["英単語", "世界史", "数学", "プログラミング", "生物"];
 const MODEL = "gemini-3.6-flash";
@@ -36,9 +40,7 @@ function buildPrompt(topic) {
   );
 }
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
-
+async function handleGenerateQuestions(request, env) {
   if (!env.GEMINI_API_KEY || !env.QUIZ_KV) {
     return jsonError("サーバー設定エラー", 500);
   }
@@ -140,3 +142,15 @@ export async function onRequestPost(context) {
 
   return Response.json({ questions: clean });
 }
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+
+    if (url.pathname === "/api/generate-questions" && request.method === "POST") {
+      return handleGenerateQuestions(request, env);
+    }
+
+    return env.ASSETS.fetch(request);
+  },
+};

@@ -99,19 +99,36 @@
   `data/*.json`をstale-while-revalidate（キャッシュを即表示しつつ裏で更新）、
   `/api/*`は常にキャッシュせずネットワークに投げる方針
 
+**重要な軌道修正（2026-07-28）**：当初「Cloudflare Pages + Pages Functions
+（`functions/api/*.js`のファイルベースルーティング）」という構成で実装したが、
+Cloudflareの現在のダッシュボードでは Pages が Workers（static assetsつき）に
+統合されており、`/functions`フォルダの自動検出が効かず、
+「Variables cannot be added to a Worker that only has static assets」
+というエラーで環境変数を設定できなかった。そのため、以下の構成に書き直した：
+
+- `functions/api/generate-questions.js` は削除
+- `worker.js`：単一のWorkerスクリプト。`POST /api/generate-questions`は自前で処理し、
+  それ以外は`env.ASSETS.fetch(request)`で静的ファイルを返す（ロジック自体は元のPages Function
+  と同じ。プロンプト・レート制限・入力検証などの設計は変更なし）
+- `wrangler.jsonc`：`main: "worker.js"`、`assets.directory: "./"`、
+  `assets.binding: "ASSETS"` を定義。KVやシークレットはダッシュボード側で設定する前提
+  （ファイルにはコミットしない）
+- `.assetsignore`：`worker.js`・`wrangler.jsonc`・`scripts/`・`.github/`・`*.md`等を
+  静的配信対象から除外（機密ではないが、公開する必要のないファイルのため）
+
 **まだ動作確認できていないこと（Cloudflare側の手動セットアップが必要）**
 このリポジトリのコードは書き終えているが、以下はアカウント操作が必要なため
 作者側で行う必要がある：
 1. Google AI StudioでGemini APIキーを発行（無料枠）
-2. Cloudflareダッシュボードで「Workers & Pages」→「Create」→「Pages」→
-   「Connect to Git」で `Hetarou/MyBriefingApp` リポジトリ（`claude/briefing-app-skeleton`
-   ブランチ）に接続。ビルド設定はフレームワークなし、ビルドコマンドは空、
-   出力ディレクトリはリポジトリのルート（`/`）
-3. KV Namespaceを作成し（例：`briefing-app-quiz-kv`）、Pagesプロジェクトの
-   Settings → Functions → KV namespace bindings で変数名 `QUIZ_KV` として紐付け
-4. Pagesプロジェクトの Settings → Environment variables で `GEMINI_API_KEY` を
+2. Cloudflareダッシュボードで「Compute」→「Workers & Pages」→「Create」から
+   `Hetarou/MyBriefingApp` リポジトリ（`claude/briefing-app-skeleton`ブランチ）に接続
+3. KV Namespaceを作成し（「Storage & Databases」→「Workers KV」、例：`briefing-app-quiz-kv`）、
+   プロジェクトの Settings → Bindings で変数名 `QUIZ_KV` として紐付け
+4. プロジェクトの Settings → Variables and Secrets で `GEMINI_API_KEY` を
    Secret（暗号化）として登録
-5. 上記完了後、実際に問題生成が動くか・PWAとしてホーム画面に追加できるかを確認する
+5. `wrangler.jsonc`の追加により、Workerとしてコードを持つ状態になったはずなので、
+   3・4の設定（特に環境変数）が可能になっているはずである。設定後、再デプロイして
+   実際に問題生成が動くか・PWAとしてホーム画面に追加できるかを確認する
 
 ## 既知の制約
 
