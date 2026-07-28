@@ -42,13 +42,7 @@ function buildPrompt(topic) {
 
 async function handleGenerateQuestions(request, env) {
   if (!env.GEMINI_API_KEY || !env.QUIZ_KV) {
-    // TEMPORARY debug detail, remove once the binding issue is diagnosed.
-    return Response.json({
-      error: "サーバー設定エラー",
-      debugEnvKeys: Object.keys(env),
-      debugHasGeminiKey: !!env.GEMINI_API_KEY,
-      debugHasQuizKv: !!env.QUIZ_KV,
-    }, { status: 500 });
+    return jsonError("サーバー設定エラー", 500);
   }
 
   let body;
@@ -96,7 +90,10 @@ async function handleGenerateQuestions(request, env) {
         required: ["questions"],
       },
       temperature: 0.9,
-      maxOutputTokens: 800,
+      maxOutputTokens: 2000,
+      thinkingConfig: {
+        thinkingLevel: "minimal",
+      },
     },
   };
 
@@ -115,9 +112,7 @@ async function handleGenerateQuestions(request, env) {
   }
 
   if (!geminiRes.ok) {
-    // TEMPORARY debug detail, remove once the response shape is confirmed.
-    const bodyText = await geminiRes.text();
-    return Response.json({ error: "生成に失敗しました", debugStatus: geminiRes.status, debugBody: bodyText }, { status: 502 });
+    return jsonError("生成に失敗しました", 502);
   }
 
   let data;
@@ -129,11 +124,10 @@ async function handleGenerateQuestions(request, env) {
 
   let questions;
   try {
-    const text = data.candidates[0].content.parts[0].text;
+    const text = data.candidates[0].content.parts.map((p) => p.text || "").join("");
     questions = JSON.parse(text).questions;
   } catch (e) {
-    // TEMPORARY debug detail, remove once the response shape is confirmed.
-    return Response.json({ error: "生成結果の形式が不正です", debug: data }, { status: 502 });
+    return jsonError("生成結果の形式が不正です", 502);
   }
 
   if (!Array.isArray(questions)) {
